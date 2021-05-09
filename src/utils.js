@@ -1,38 +1,57 @@
+import { stat } from "fs/promises";
+
 import { ACTION_TYPES } from "./constants.js";
 
-export const validateArguments = ({ input, output, shift, action }) => {
+export const validateArguments = async ({ input, output, shift, action }) => {
+  input !== undefined &&
+    input !== null &&
+    (await tryToAccessTheFile(input, "input"));
+  output !== undefined &&
+    output !== null &&
+    (await tryToAccessTheFile(output, "output"));
   const validatedConfig = {
-    config: {
-      input,
-      output,
-    },
+    input,
+    output,
   };
 
   if (shift === undefined || shift === null) {
-    validatedConfig.error = "Shift argument required.";
-    return validatedConfig;
+    process.stderr.write("\nShift argument required.\n");
+    process.exit(1);
   } else if (isNaN(Number(shift))) {
-    validatedConfig.error = "Shift must be a number.";
-    return validatedConfig;
+    process.stderr.write("\nShift must be a number.\n");
+    process.exit(1);
   } else {
-    validatedConfig.config.shift = 26 + (Number(shift) % 26);
+    validatedConfig.shift = 26 + (Number(shift) % 26);
   }
 
   if (action === undefined || action === null) {
-    validatedConfig.error = "Action argument required.";
-    return validatedConfig;
+    process.stderr.write("\nAction argument required.\n");
+    process.exit(1);
   } else if (action !== ACTION_TYPES.DECODE && action !== ACTION_TYPES.ENCODE) {
-    validatedConfig.error = "Action argument must take encode/decode type.";
-    return validatedConfig;
+    process.stderr.write("\nAction argument must take encode/decode type.\n");
+    process.exit(1);
   } else {
-    validatedConfig.config.action = action;
+    validatedConfig.action = action;
   }
 
   if (action === ACTION_TYPES.DECODE) {
-    validatedConfig.config.shift = 26 - validatedConfig.config.shift;
+    validatedConfig.shift = 26 - validatedConfig.shift;
   }
 
   return validatedConfig;
+};
+
+const tryToAccessTheFile = async (path, type) => {
+  try {
+    const fileStat = await stat(path);
+    if (!fileStat.isFile()) {
+      process.stderr.write(`\nCannot access ${type} file.\n`);
+      process.exit(2);
+    }
+  } catch (err) {
+    process.stderr.write(`\nCannot access ${type} file.\n`);
+    process.exit(2);
+  }
 };
 
 const getNewChar = (char, shift) => {

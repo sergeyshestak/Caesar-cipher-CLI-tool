@@ -3,21 +3,15 @@ import fs from "fs";
 
 import { validateArguments, encrypt } from "./utils.js";
 
-const caesarCipher = (commandArguments) => {
-  const {
-    config: { input, output, shift },
-    error,
-  } = validateArguments(commandArguments);
+const caesarCipher = async (commandArguments) => {
+  const { input, output, shift } = await validateArguments(commandArguments);
 
-  if (error) {
-    error && process.stderr.write(`\n${error}\n`);
-    process.exit(1);
-  }
-
-  const streamRead = fs.createReadStream(input, {
-    highWaterMark: 2,
-    encoding: "utf8",
-  });
+  const streamRead = input
+    ? fs.createReadStream(input, {
+        highWaterMark: 2,
+      })
+    : process.stdin;
+  streamRead.setEncoding("utf8");
 
   const streamTransform = new Transform({
     highWaterMark: 2,
@@ -31,10 +25,12 @@ const caesarCipher = (commandArguments) => {
     },
   });
 
-  const streamWrite = fs.createWriteStream(output, {
-    highWaterMark: 2,
-    flags: "a",
-  });
+  const streamWrite = output
+    ? fs.createWriteStream(output, {
+        highWaterMark: 2,
+        flags: "a",
+      })
+    : process.stdout;
 
   streamRead.pipe(streamTransform).pipe(streamWrite);
   streamWrite.on("finish", () => {
