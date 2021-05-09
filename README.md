@@ -29,7 +29,9 @@ Use the package manager npm to install dependencies:
 
 Use bash to run application:
 
+```bash
     node caesar_cipher -s 1 -a encode -i './input.txt' -o './output.txt'
+```
 
 If input not provided application will work with process.stdin. To finish working with the application use CTRL + C command.
 
