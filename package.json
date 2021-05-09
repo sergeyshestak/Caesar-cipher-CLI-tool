@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/sergeyshestak/Caesar-cipher-CLI-tool#readme",
   "dependencies": {
-    "commander": "^7.2.0",
-    "minimist": "^1.2.5"
+    "commander": "^7.2.0"
   }
 }
