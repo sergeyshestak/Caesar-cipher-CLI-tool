@@ -10,11 +10,11 @@ Go into the repository:
 
 Go into the caesar-cipher-cli-tool branch:
 
-      git checkout caesar-cipher-cli-tool
+    git checkout caesar-cipher-cli-tool
 
 Use the package manager npm to install dependencies:
 
-      npm install
+    npm install
 
 # Arguments
 
